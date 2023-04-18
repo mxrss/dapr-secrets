@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  consoleapp1:
+    image: ${DOCKER_REGISTRY-}consoleapp1
+    build:
+      context: .
+      dockerfile: ConsoleApp1/Dockerfile
+    ports:
+    - 3500:3500
+  mybackend-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "MyBackEnd", "-components-path", "/apps/components" ]
+    volumes:
+    - type: bind
+      source: ./components
+      target: /apps/components
+    depends_on:
+      - consoleapp1
+    network_mode: "service:consoleapp1"
